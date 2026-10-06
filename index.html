@@ -1,286 +1,286 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Residencia MENASHO — Inicio</title>
-<meta name="theme-color" content="#0f1117">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="MENASHO">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230f1117'/%3E%3Ctext x='50' y='66' font-size='52' text-anchor='middle' fill='%236c8fff'%3E♥%3C/text%3E%3C/svg%3E">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Budget à deux</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script>
-const firebaseConfig = { apiKey:"AIzaSyAI1LJ4w5B23knDWB0c_M2QC3xwxX_qAOg", authDomain:"gastos-elia.firebaseapp.com", projectId:"gastos-elia", storageBucket:"gastos-elia.firebasestorage.app", messagingSenderId:"1047223330489", appId:"1:1047223330489:web:7c7fde9791484f6cbf5d68" };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-// Login anónimo: protege Firestore (solo usuarios autenticados por la app)
-window._authReady = firebase.auth().signInAnonymously().catch(e => console.error('Auth:', e));
-</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root{--bg:#0f1117;--surface:#181b24;--surface2:#1f2333;--border:#2a2f45;--accent:#6c8fff;--accent2:#ff7c6e;--green:#4ecb8d;--yellow:#f5c542;--purple:#a78bfa;--text:#e8eaf0;--muted:#7a839c;--radius:18px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{font-size:15px;}
-body{font-family:'DM Sans',sans-serif;background:radial-gradient(1200px 600px at 50% -10%, #1a2030 0%, var(--bg) 60%);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
-header{padding:1.4rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.6rem;}
-.logo{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--accent);letter-spacing:-0.5px;}
-.logo span{color:var(--accent2);}
-.tagline{font-size:0.82rem;color:var(--muted);}
-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem 4rem;}
-.welcome{text-align:center;margin-bottom:2.5rem;}
-.welcome h1{font-family:'DM Serif Display',serif;font-size:2rem;font-weight:400;margin-bottom:0.5rem;}
-.welcome p{font-size:0.95rem;color:var(--muted);max-width:480px;margin:0 auto;line-height:1.6;}
-.cards{display:grid;grid-template-columns:repeat(2,minmax(260px,340px));gap:1.5rem;width:100%;max-width:740px;}
-.app-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem 1.8rem;text-decoration:none;color:var(--text);position:relative;overflow:hidden;transition:transform 0.2s,border-color 0.2s,box-shadow 0.2s;display:flex;flex-direction:column;gap:0.8rem;}
-.app-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
-.app-card.gastos::before{background:linear-gradient(90deg,var(--accent),var(--green));}
-.app-card.salud::before{background:linear-gradient(90deg,var(--purple),var(--accent2));}
-.app-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.35);}
-.app-card.gastos:hover{border-color:var(--accent);}
-.app-card.salud:hover{border-color:var(--purple);}
-.app-icon{font-size:2.6rem;line-height:1;}
-.app-title{font-family:'DM Serif Display',serif;font-size:1.4rem;}
-.app-desc{font-size:0.88rem;color:var(--muted);line-height:1.55;flex:1;}
-.app-cta{font-size:0.85rem;font-weight:600;display:flex;align-items:center;gap:0.4rem;margin-top:0.4rem;}
-.app-card.gastos .app-cta{color:var(--accent);}
-.app-card.salud .app-cta{color:var(--purple);}
-.app-card .arrow{transition:transform 0.2s;}
-.app-card:hover .arrow{transform:translateX(4px);}
-footer{text-align:center;padding:1.5rem;font-size:0.75rem;color:var(--muted);}
-@media(max-width:680px){.cards{grid-template-columns:1fr;max-width:380px;}.welcome h1{font-size:1.6rem;}}
+:root{--bg:#eef1f4;--card:#fff;--ink:#14202b;--mute:#667684;--line:#d9e0e6;--teal:#0f766e;--red:#b4432f;--amber:#b7791f;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+body{font-family:Manrope,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45}
+button,input{font:inherit;color:inherit}
+header{display:flex;justify-content:space-between;align-items:center;gap:.8rem;flex-wrap:wrap;padding:1rem 1.4rem;background:var(--ink);color:#fff}
+header h1{font-size:1.15rem;font-weight:800}
+.bar{display:flex;gap:.8rem;align-items:center;font-size:.82rem;color:#b9c6d1}
+.bar button,.ghost{background:none;border:1px solid #4a5b69;color:#fff;border-radius:6px;padding:.3rem .7rem;cursor:pointer}
+main{max-width:980px;margin:0 auto;padding:1.2rem}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.7rem;margin-bottom:1.4rem}
+.sum div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.8rem 1rem}
+.sum small{color:var(--mute);display:block;font-size:.76rem}
+.sum b{font-size:1.35rem;font-weight:800}
+.sum .rest{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sum .rest small{color:#b9c6d1}
+.neg{color:#ff9d8a}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:1rem;overflow:hidden}
+section h2{display:flex;justify-content:space-between;align-items:center;font-size:.98rem;padding:.7rem 1rem;border-bottom:1px solid var(--line)}
+section h2 span{color:var(--mute);font-weight:500}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:520px}
+th{text-align:left;font-size:.75rem;font-weight:500;color:var(--mute);padding:.4rem .6rem}
+td{padding:.15rem .3rem;border-top:1px solid var(--line)}
+td input{width:100%;border:1px solid transparent;border-radius:6px;background:none;padding:.4rem .5rem}
+td input:hover{border-color:var(--line)}
+td input:focus{outline:2px solid var(--teal);background:#fff}
+td input[type=number]{text-align:right;min-width:80px}
+.by{color:var(--mute);font-size:.75rem;white-space:nowrap}
+.m{color:var(--amber);font-weight:700;white-space:nowrap;font-size:.85rem}
+.del{background:none;border:0;color:var(--mute);cursor:pointer;padding:.3rem .5rem}
+.del:hover{color:var(--red)}
+.add{display:block;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:.6rem 1rem;color:var(--teal);font-weight:700;cursor:pointer}
+.add:hover{background:#f4f8f8}
+#login{min-height:100vh;display:grid;place-items:center;padding:1rem}
+#lf{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.6rem;width:340px;max-width:100%;display:grid;gap:.7rem}
+#lf h1{font-size:1.3rem;font-weight:800}
+#lf input{border:1px solid var(--line);border-radius:8px;padding:.6rem .8rem}
+#lf button{background:var(--teal);color:#fff;border:0;border-radius:8px;padding:.65rem;font-weight:700;cursor:pointer}
+.err{color:var(--red);font-size:.82rem;min-height:1.1em}
+.empty{padding:1.4rem;text-align:center;color:var(--mute)}
+.empty button{margin-top:.6rem;background:var(--teal);color:#fff;border:0;border-radius:8px;padding:.6rem 1.1rem;font-weight:700;cursor:pointer}
+.tabs{display:flex;gap:.4rem;margin-bottom:1rem}
+.tabs button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:.5rem 1rem;font-weight:700;cursor:pointer}
+.tabs .on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.frm{display:flex;gap:.5rem;flex-wrap:wrap;padding:.8rem 1rem}
+.frm input,.frm select,#dm{border:1px solid var(--line);border-radius:8px;padding:.5rem .6rem}
+#dl{flex:1;min-width:140px}
+.frm button{background:var(--teal);color:#fff;border:0;border-radius:8px;padding:.5rem 1rem;font-weight:700;cursor:pointer}
+td select{width:100%;border:1px solid transparent;border-radius:6px;background:none;padding:.4rem .3rem}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
+.cv{position:relative;height:240px;padding:.8rem}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">Residencia <span>MENASHO</span></div>
-  <div class="tagline">Panel de control · MENASHO</div>
-</header>
+<div id="login" hidden>
+  <form id="lf">
+    <h1>Budget à deux</h1>
+    <input id="em" type="email" placeholder="Email" autocomplete="username" required>
+    <input id="pw" type="password" placeholder="Mot de passe" autocomplete="current-password" required>
+    <div class="err" id="lerr"></div>
+    <button>Se connecter</button>
+  </form>
+</div>
 
-<main>
-  <div class="welcome">
-    <h1>¿Qué quieres gestionar hoy?</h1>
-    <p>Elige una de las herramientas. Ambas comparten la misma base de datos segura y se actualizan en tiempo real.</p>
-  </div>
+<div id="app" hidden>
+  <header>
+    <h1>Budget à deux</h1>
+    <div class="bar"><span id="sync">Connexion…</span><span id="who"></span><button id="out">Quitter</button></div>
+  </header>
+  <main>
+    <div class="tabs"><button class="on" data-t="budget">Budget</button><button data-t="dep">Dépenses</button></div>
+    <div id="v-budget">
+      <div class="sum" id="sum"></div>
+      <div id="secs"></div>
+    </div>
+    <div id="v-dep" hidden>
+      <div class="sum" id="dsum"></div>
+      <section>
+        <h2>Nouvelle dépense</h2>
+        <div class="frm"><input id="dd" type="date"><input id="dl" placeholder="Libellé"><select id="dc"></select><input id="da" type="number" step="any" placeholder="Montant €"><button id="dadd">Ajouter</button></div>
+      </section>
+      <section>
+        <h2>Dépenses du mois <input id="dm" type="month"></h2>
+        <div class="wrap"><table><thead><tr><th>Date</th><th>Libellé</th><th>Catégorie</th><th>Montant €</th><th>Modifié par</th><th></th></tr></thead><tbody id="dtb"></tbody></table></div>
+      </section>
+      <div class="g2">
+        <section><h2>Par catégorie</h2><div class="cv"><canvas id="c1"></canvas></div></section>
+        <section><h2>6 derniers mois</h2><div class="cv"><canvas id="c2"></canvas></div></section>
+      </div>
+    </div>
+  </main>
+</div>
 
-  <div class="cards">
-    <a class="app-card gastos" href="gastos.html">
-      <div class="app-icon">💰</div>
-      <div class="app-title">Gastos</div>
-      <div class="app-desc">Control de ingresos y egresos, gastos fijos y variables, previsión mensual, seguimiento de medicamentos y reportes.</div>
-      <div class="app-cta">Abrir gestión de gastos <span class="arrow">→</span></div>
-    </a>
-
-    <a class="app-card salud" href="expediente.html">
-      <div class="app-icon">🩺</div>
-      <div class="app-title">Expediente de salud</div>
-      <div class="app-desc">Seguimiento del estado físico, mental, anímico y social. Registro de consultas, medicación activa y evolución en el tiempo.</div>
-      <div class="app-cta">Abrir expediente <span class="arrow">→</span></div>
-    </a>
-  </div>
-</main>
-
-<footer>Gestión Residencia MENASHO · Datos sincronizados con Firebase</footer>
-<div id="roleBar" style="position:fixed;top:0.6rem;right:1rem;z-index:50;font-size:0.78rem;color:#7a839c;display:none;align-items:center;gap:0.6rem;"></div>
 <script>
-// ============================================================
-//  MENASHO — Módulo de autenticación por PIN (compartido)
-//  Roles: owner (total) · admin (editar) · lectura (solo ver)
-//  Incluir en index.html, gastos.html y expediente.html
-//  Requiere que firebase ya esté inicializado y exista `db`.
-// ============================================================
-(function () {
-  // Hash simple (SHA-256) del PIN — evita guardar el PIN en texto plano
-  async function hashPin(pin) {
-    const data = new TextEncoder().encode('menasho_salt_' + pin);
-    const buf = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-  }
+// 1) Colle ici la config de TON projet Firebase (Paramètres du projet > Tes applications > Web)
+const CFG = { apiKey:"COLLE_ICI", authDomain:"", projectId:"", appId:"" };
 
-  // PINs por defecto al sembrar la primera vez (CÁMBIALOS desde el panel)
-  const DEFAULT_PINS = { owner: '741409', admin: '369963', lectura: '202606' };
+const TYPES = { revenu:'Revenus', charge:'Charges fixes et dépenses', dette:'Crédits et dettes', epargne:'Épargne' };
+const MODELE = {
+  revenu:['Salaire'],
+  charge:['Logement','Assurances','Énergie','Téléphone et internet','Alimentation','Abonnements','Famille'],
+  dette:['Crédit conso 1','Crédit conso 2','LOA auto'],
+  epargne:['Livret','PEA','Fonds d\'urgence']
+};
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const eur = n => (+n || 0).toLocaleString('fr-FR', { style:'currency', currency:'EUR', maximumFractionDigits:0 });
+const sum = (t, f='amount') => items.filter(i => i.type === t).reduce((s, i) => s + (+i[f] || 0), 0);
 
-  const ROLE_LABELS = { owner: 'Acceso total', admin: 'Administrador', lectura: 'Solo lectura' };
+let items = [], deps = [], unsub = null, pending = false, col;
 
-  // ── Sesión (dura mientras la pestaña esté abierta) ──
-  function getRole() { return sessionStorage.getItem('menasho_role') || null; }
-  function setRole(r) { sessionStorage.setItem('menasho_role', r); }
-  function clearRole() { sessionStorage.removeItem('menasho_role'); }
-  function isOwner() { return getRole() === 'owner'; }
-  function isAdmin() { return getRole() === 'owner' || getRole() === 'admin'; }
-  function canEdit() { return isAdmin(); }
-  function isLectura() { return getRole() === 'lectura'; }
+if (CFG.apiKey.startsWith('COLLE')) {
+  $('#login').hidden = false;
+  $('#lf').innerHTML = '<h1>Config manquante</h1><p>Ouvre budget.html et colle la config Firebase dans <b>CFG</b>.</p>';
+} else {
+  firebase.initializeApp(CFG);
+  const auth = firebase.auth(), db = firebase.firestore();
+  col = db.collection('budget_items');
 
-  // ── Carga o siembra los hashes de PIN en Firebase ──
-  async function loadPinConfig() {
-    const ref = db.collection('config').doc('auth');
-    const snap = await ref.get();
-    if (snap.exists && snap.data().pins) return snap.data().pins;
-    // Sembrar por defecto (hasheados)
-    const pins = {};
-    for (const [role, pin] of Object.entries(DEFAULT_PINS)) pins[role] = await hashPin(pin);
-    await ref.set({ pins, seededAt: new Date().toISOString() });
-    return pins;
-  }
-
-  // ── Verifica un PIN ingresado y devuelve el rol (o null) ──
-  async function verifyPin(pin) {
-    const pins = await loadPinConfig();
-    const h = await hashPin(pin);
-    for (const role of ['owner', 'admin', 'lectura']) {
-      if (pins[role] === h) return role;
-    }
-    return null;
-  }
-
-  // ── Cambiar un PIN (solo owner) ──
-  async function changePin(role, newPin) {
-    if (!isOwner()) throw new Error('Solo el acceso total puede cambiar PINs');
-    if (!/^\d{6}$/.test(newPin)) throw new Error('El PIN debe ser de 6 dígitos');
-    const ref = db.collection('config').doc('auth');
-    const snap = await ref.get();
-    const pins = (snap.exists && snap.data().pins) ? snap.data().pins : {};
-    pins[role] = await hashPin(newPin);
-    await ref.set({ pins }, { merge: true });
-  }
-
-  // ── Pantalla de PIN (overlay). onSuccess(role) al validar ──
-  function showPinGate(onSuccess, opts = {}) {
-    const allowed = opts.allowedRoles || ['owner', 'admin', 'lectura'];
-    const ov = document.createElement('div');
-    ov.id = 'pinGate';
-    ov.style.cssText = 'position:fixed;inset:0;background:radial-gradient(900px 500px at 50% -10%,#1a2030,#0f1117 60%);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;font-family:DM Sans,sans-serif;';
-    ov.innerHTML = `
-      <div style="font-family:'DM Serif Display',serif;font-size:1.6rem;color:#6c8fff;">Residencia <span style="color:#ff7c6e">MENASHO</span></div>
-      <div style="font-size:0.9rem;color:#7a839c;">Introduce tu PIN de acceso</div>
-      <div id="pinDots" style="display:flex;gap:0.6rem;margin:0.4rem 0;"></div>
-      <div id="pinPad" style="display:grid;grid-template-columns:repeat(3,64px);gap:0.7rem;"></div>
-      <div id="pinError" style="font-size:0.82rem;color:#ff7c6e;height:18px;"></div>
-    `;
-    document.body.appendChild(ov);
-
-    let pin = '';
-    const dots = ov.querySelector('#pinDots');
-    const pad = ov.querySelector('#pinPad');
-    const err = ov.querySelector('#pinError');
-
-    function renderDots() {
-      dots.innerHTML = Array.from({ length: 6 }).map((_, i) =>
-        `<div style="width:14px;height:14px;border-radius:50%;border:2px solid ${i < pin.length ? '#6c8fff' : '#2a2f45'};background:${i < pin.length ? '#6c8fff' : 'transparent'};transition:all .15s;"></div>`).join('');
-    }
-    renderDots();
-
-    const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'];
-    pad.innerHTML = keys.map(k => k === ''
-      ? `<div></div>`
-      : `<button data-k="${k}" style="width:64px;height:64px;border-radius:50%;border:1px solid #2a2f45;background:#181b24;color:#e8eaf0;font-size:1.4rem;cursor:pointer;transition:all .15s;">${k}</button>`).join('');
-
-    pad.querySelectorAll('button').forEach(b => {
-      b.onmouseenter = () => b.style.borderColor = '#6c8fff';
-      b.onmouseleave = () => b.style.borderColor = '#2a2f45';
-      b.onclick = async () => {
-        const k = b.dataset.k;
-        err.textContent = '';
-        if (k === '⌫') { pin = pin.slice(0, -1); renderDots(); return; }
-        if (pin.length >= 6) return;
-        pin += k;
-        renderDots();
-        if (pin.length === 6) {
-          err.textContent = 'Verificando...';
-          err.style.color = '#7a839c';
-          const role = await verifyPin(pin);
-          if (role && allowed.includes(role)) {
-            setRole(role);
-            ov.style.opacity = '0'; ov.style.transition = 'opacity .35s';
-            setTimeout(() => { ov.remove(); onSuccess(role); }, 350);
-          } else if (role && !allowed.includes(role)) {
-            err.style.color = '#ff7c6e'; err.textContent = 'Este acceso no tiene permiso aquí.';
-            pin = ''; renderDots();
-          } else {
-            err.style.color = '#ff7c6e'; err.textContent = 'PIN incorrecto.';
-            pin = ''; renderDots();
-          }
-        }
-      };
-    });
-
-    // Soporte de teclado físico
-    ov._keyHandler = async (e) => {
-      if (/^\d$/.test(e.key) && pin.length < 6) { pin += e.key; renderDots(); if (pin.length === 6) pad.querySelector('button[data-k]').click.call({ dataset: {} }); }
-      if (e.key === 'Backspace') { pin = pin.slice(0, -1); renderDots(); }
-    };
-  }
-
-  // ── API pública ──
-  window.MenashoAuth = {
-    getRole, setRole, clearRole, isOwner, isAdmin, canEdit, isLectura,
-    verifyPin, changePin, showPinGate, loadPinConfig, ROLE_LABELS,
-    // Helper: exige sesión; si no hay, muestra el gate
-    requireAuth(onReady, opts) {
-      if (getRole()) { onReady(getRole()); return; }
-      showPinGate(onReady, opts);
-    },
-    logout() { clearRole(); location.reload(); }
+  $('#lf').onsubmit = async e => {
+    e.preventDefault();
+    try { await auth.signInWithEmailAndPassword($('#em').value, $('#pw').value); }
+    catch { $('#lerr').textContent = 'Email ou mot de passe incorrect.'; }
   };
-})();
+  $('#out').onclick = () => auth.signOut();
 
-</script>
-<script>
-// ── Launcher MENASHO: gate de PIN + panel de cambio de PIN ──
-document.addEventListener('DOMContentLoaded', function () {
-  document.querySelector('main').style.visibility = 'hidden';
-  (window._authReady || Promise.resolve()).finally(function () {
-    MenashoAuth.requireAuth(function (role) {
-    document.querySelector('main').style.visibility = 'visible';
-    const bar = document.getElementById('roleBar');
-    bar.style.display = 'flex';
-    let html = '<span>' + MenashoAuth.ROLE_LABELS[role] + '</span>';
-    if (MenashoAuth.isOwner()) {
-      html += '<button id="btnPins" style="background:#1f2333;border:1px solid #2a2f45;color:#a78bfa;border-radius:6px;padding:0.25rem 0.6rem;cursor:pointer;font-size:0.75rem;">🔑 PINs</button>';
+  // Dépenses réelles : même principe, un champ à la fois, synchronisé en direct
+  const dcol = db.collection('budget_depenses');
+  let dun = null;
+  auth.onAuthStateChanged(u => {
+    if (dun) { dun(); dun = null; }
+    if (u) dun = dcol.orderBy('date', 'desc').onSnapshot(s => { deps = s.docs.map(d => ({ id:d.id, ...d.data() })); renderDep(); });
+  });
+  $('#dm').onchange = renderDep;
+  $('#dadd').onclick = () => {
+    const a = parseFloat($('#da').value);
+    if (!a || !$('#dd').value) return;
+    dcol.add({ date:$('#dd').value, label:$('#dl').value || 'Dépense', category:$('#dc').value, amount:a, by:auth.currentUser.email });
+    $('#da').value = ''; $('#dl').value = '';
+  };
+  $('#dtb').addEventListener('change', e => {
+    const i = e.target, tr = i.closest('tr');
+    if (!tr || !i.dataset.f) return;
+    dcol.doc(tr.dataset.id).update({ [i.dataset.f]: i.type === 'number' ? (parseFloat(i.value) || 0) : i.value, by:auth.currentUser.email });
+  });
+  $('#dtb').addEventListener('click', e => {
+    if (e.target.dataset.del && confirm('Supprimer cette dépense pour vous deux ?')) dcol.doc(e.target.dataset.del).delete();
+  });
+  $('#dtb').addEventListener('focusout', () => setTimeout(() => { if (!document.activeElement.closest('#dtb')) renderDep(); }, 150));
+
+  auth.onAuthStateChanged(u => {
+    if (unsub) { unsub(); unsub = null; }
+    $('#login').hidden = !!u; $('#app').hidden = !u;
+    if (!u) return;
+    $('#who').textContent = u.email;
+    unsub = col.orderBy('order').onSnapshot(s => {
+      items = s.docs.map(d => ({ id:d.id, ...d.data() }));
+      $('#sync').textContent = '● Synchronisé en direct';
+      render();
+    }, err => $('#sync').textContent = 'Erreur : ' + err.code);
+  });
+
+  // Édition : on met à jour UN seul champ, donc deux personnes peuvent modifier des champs différents sans s'écraser
+  $('#secs').addEventListener('change', e => {
+    const i = e.target, tr = i.closest('tr');
+    if (!tr || !i.dataset.f) return;
+    const v = i.type === 'number' ? (parseFloat(i.value) || 0) : i.value;
+    col.doc(tr.dataset.id).update({ [i.dataset.f]:v, by:auth.currentUser.email });
+  });
+  $('#secs').addEventListener('focusout', () => setTimeout(() => {
+    if (pending && !document.activeElement.closest('#secs')) render();
+  }, 150));
+  $('#secs').addEventListener('click', async e => {
+    const email = auth.currentUser.email;
+    if (e.target.dataset.add) {
+      col.add({ type:e.target.dataset.add, label:'Nouvelle ligne', amount:0, balance:0, rate:0, order:Date.now(), by:email });
+    } else if (e.target.dataset.del) {
+      if (confirm('Supprimer cette ligne pour vous deux ?')) col.doc(e.target.dataset.del).delete();
+    } else if (e.target.id === 'seed') {
+      const b = db.batch(); let o = Date.now();
+      for (const [type, labels] of Object.entries(MODELE))
+        labels.forEach(label => b.set(col.doc(), { type, label, amount:0, balance:0, rate:0, order:o++, by:email }));
+      await b.commit();
     }
-    html += '<button id="btnLogout" style="background:#1f2333;border:1px solid #2a2f45;color:#ff7c6e;border-radius:6px;padding:0.25rem 0.6rem;cursor:pointer;font-size:0.75rem;">Salir</button>';
-    bar.innerHTML = html;
-    const bp = document.getElementById('btnPins');
-    if (bp) bp.onclick = openPinPanel;
-    document.getElementById('btnLogout').onclick = function () { MenashoAuth.logout(); };
-    // Si es lectura, ocultar nada extra en el launcher (las apps lo gestionan)
-    });
-  });
-});
-
-function openPinPanel() {
-  if (!MenashoAuth.isOwner()) return;
-  const roles = [['owner', 'Acceso total (tú)'], ['admin', 'Administrador'], ['lectura', 'Solo lectura (familiares)']];
-  const ov = document.createElement('div');
-  ov.id = 'pinPanelOv';
-  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:flex;align-items:center;justify-content:center;';
-  const box = document.createElement('div');
-  box.style.cssText = 'background:#181b24;border:1px solid #2a2f45;border-radius:14px;padding:1.8rem;width:380px;max-width:92vw;font-family:DM Sans,sans-serif;';
-  let inner = '<h3 style="font-family:DM Serif Display,serif;color:#e8eaf0;margin-bottom:1rem;">Cambiar PIN de acceso</h3>';
-  roles.forEach(function (r) {
-    inner += '<div style="margin-bottom:0.9rem;"><label style="font-size:0.78rem;color:#7a839c;display:block;margin-bottom:0.3rem;">' + r[1] + '</label>'
-      + '<div style="display:flex;gap:0.5rem;"><input id="newpin-' + r[0] + '" type="text" inputmode="numeric" maxlength="6" placeholder="6 dígitos" style="flex:1;background:#1f2333;border:1px solid #2a2f45;border-radius:8px;color:#e8eaf0;padding:0.55rem 0.8rem;outline:none;">'
-      + '<button data-role="' + r[0] + '" class="savePinBtn" style="background:#6c8fff;border:none;color:#fff;border-radius:8px;padding:0.5rem 0.9rem;cursor:pointer;">Guardar</button></div></div>';
-  });
-  inner += '<div id="pinPanelMsg" style="font-size:0.8rem;color:#4ecb8d;min-height:18px;margin-top:0.4rem;"></div>';
-  inner += '<div style="text-align:right;margin-top:0.6rem;"><button id="closePinPanel" style="background:transparent;border:1px solid #2a2f45;color:#7a839c;border-radius:8px;padding:0.5rem 1.2rem;cursor:pointer;">Cerrar</button></div>';
-  box.innerHTML = inner;
-  ov.appendChild(box);
-  document.body.appendChild(ov);
-  document.getElementById('closePinPanel').onclick = function () { ov.remove(); };
-  box.querySelectorAll('.savePinBtn').forEach(function (b) {
-    b.onclick = async function () {
-      const role = b.dataset.role;
-      const v = document.getElementById('newpin-' + role).value.trim();
-      const msg = document.getElementById('pinPanelMsg');
-      if (!/^\d{6}$/.test(v)) { msg.style.color = '#ff7c6e'; msg.textContent = 'El PIN debe ser de 6 dígitos.'; return; }
-      try { await MenashoAuth.changePin(role, v); msg.style.color = '#4ecb8d'; msg.textContent = 'PIN de ' + role + ' actualizado ✓'; document.getElementById('newpin-' + role).value = ''; }
-      catch (e) { msg.style.color = '#ff7c6e'; msg.textContent = e.message; }
-    };
   });
 }
 
+const CATS = ['Alimentation','Logement','Transport','Santé','Loisirs','Famille','Autre'];
+const PAL = ['#0f766e','#b7791f','#b4432f','#2f5d8a','#6b4e9b','#7a8a3a','#667684'];
+let c1, c2;
+
+const drow = d => `<tr data-id="${d.id}"><td><input data-f="date" type="date" value="${esc(d.date)}"></td>`
+  + `<td><input data-f="label" value="${esc(d.label)}"></td>`
+  + `<td><select data-f="category">${CATS.map(c => `<option${c === d.category ? ' selected' : ''}>${c}</option>`).join('')}</select></td>`
+  + `<td><input data-f="amount" type="number" step="any" value="${+d.amount || 0}"></td>`
+  + `<td class="by">${esc((d.by || '').split('@')[0])}</td><td><button class="del" data-del="${d.id}" aria-label="Supprimer">✕</button></td></tr>`;
+
+function renderDep() {
+  const m = $('#dm').value;
+  const mois = deps.filter(d => (d.date || '').startsWith(m));
+  const by = {};
+  mois.forEach(d => by[d.category] = (by[d.category] || 0) + (+d.amount || 0));
+  const tot = Object.values(by).reduce((a, b) => a + b, 0);
+  const top = Object.entries(by).sort((a, b) => b[1] - a[1])[0];
+  const reste = sum('revenu') - sum('charge') - sum('dette') - sum('epargne');
+  $('#dsum').innerHTML = `<div><small>Dépensé ce mois</small><b>${eur(tot)}</b></div>`
+    + `<div><small>Nombre de dépenses</small><b>${mois.length}</b></div>`
+    + `<div><small>Plus gros poste</small><b>${top ? esc(top[0]) : '—'}</b></div>`
+    + `<div class="rest"><small>Reste à vivre du budget</small><b class="${reste < 0 ? 'neg' : ''}">${eur(reste)}</b></div>`;
+  if (!(document.activeElement && document.activeElement.closest('#dtb')))
+    $('#dtb').innerHTML = mois.map(drow).join('') || '<tr><td colspan="6" class="empty">Aucune dépense ce mois-ci.</td></tr>';
+  if (!window.Chart) return;
+  const ks = [...Array(6)].map((_, i) => {
+    const d = new Date(+m.slice(0, 4), +m.slice(5) - 6 + i, 1);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  });
+  const vals = ks.map(k => deps.filter(d => (d.date || '').startsWith(k)).reduce((s, d) => s + (+d.amount || 0), 0));
+  if (c1) c1.destroy(); if (c2) c2.destroy();
+  c1 = new Chart($('#c1'), { type:'doughnut', data:{ labels:Object.keys(by), datasets:[{ data:Object.values(by), backgroundColor:PAL }] }, options:{ maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } } });
+  c2 = new Chart($('#c2'), { type:'bar', data:{ labels:ks, datasets:[{ label:'Dépenses €', data:vals, backgroundColor:'#0f766e' }] }, options:{ maintainAspectRatio:false, plugins:{ legend:{ display:false } } } });
+}
+
+$('#dc').innerHTML = CATS.map(c => `<option>${c}</option>`).join('');
+const hoy = new Date().toISOString().slice(0, 10);
+$('#dd').value = hoy; $('#dm').value = hoy.slice(0, 7);
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b));
+  $('#v-budget').hidden = b.dataset.t !== 'budget';
+  $('#v-dep').hidden = b.dataset.t !== 'dep';
+  if (b.dataset.t === 'dep') renderDep();
+});
+
+function fin(it) {
+  const P = +it.amount, B = +it.balance, r = (+it.rate || 0) / 1200;
+  if (!P || !B) return '—';
+  const n = r ? (P > r * B ? -Math.log(1 - r * B / P) / Math.log(1 + r) : Infinity) : B / P;
+  return isFinite(n) ? Math.ceil(n) + ' mois' : 'Ne se rembourse pas';
+}
+
+function row(it) {
+  const d = it.type === 'dette';
+  const num = (f, v) => `<td><input data-f="${f}" type="number" step="any" value="${+v || 0}"></td>`;
+  return `<tr data-id="${it.id}"><td><input data-f="label" value="${esc(it.label)}"></td>${num('amount', it.amount)}`
+    + (d ? num('balance', it.balance) + num('rate', it.rate) + `<td class="m">${fin(it)}</td>` : '')
+    + `<td class="by">${esc((it.by || '').split('@')[0])}</td><td><button class="del" data-del="${it.id}" aria-label="Supprimer">✕</button></td></tr>`;
+}
+
+function render() {
+  const rev = sum('revenu'), out = sum('charge') + sum('dette'), eps = sum('epargne'), rest = rev - out - eps;
+  $('#sum').innerHTML =
+    `<div><small>Revenus / mois</small><b>${eur(rev)}</b></div>`
+    + `<div><small>Charges et crédits</small><b>${eur(out)}</b></div>`
+    + `<div><small>Épargne</small><b>${eur(eps)}</b></div>`
+    + `<div class="rest"><small>Reste à vivre</small><b class="${rest < 0 ? 'neg' : ''}">${eur(rest)}</b></div>`
+    + `<div><small>Dette restante</small><b>${eur(sum('dette', 'balance'))}</b></div>`;
+
+  if (document.activeElement && document.activeElement.closest('#secs')) { pending = true; return; }
+  pending = false;
+  if (!items.length) {
+    $('#secs').innerHTML = '<section><div class="empty">Aucune ligne pour l\'instant.<br><button id="seed">Charger un modèle de budget</button></div></section>';
+    return;
+  }
+  $('#secs').innerHTML = Object.entries(TYPES).map(([t, name]) => {
+    const rows = items.filter(i => i.type === t);
+    const head = t === 'dette'
+      ? '<th>Libellé</th><th>Mensualité €</th><th>Solde restant €</th><th>Taux %</th><th>Fin estimée</th><th>Modifié par</th><th></th>'
+      : '<th>Libellé</th><th>Montant € / mois</th><th>Modifié par</th><th></th>';
+    return `<section><h2>${name}<span>${eur(sum(t))} / mois</span></h2><div class="wrap"><table><tr>${head}</tr>${rows.map(row).join('')}</table></div><button class="add" data-add="${t}">+ Ajouter une ligne</button></section>`;
+  }).join('');
+}
 </script>
 </body>
 </html>

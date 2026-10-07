@@ -62,6 +62,11 @@ td input[type=number]{text-align:right;min-width:80px}
 td select{width:100%;border:1px solid transparent;border-radius:6px;background:none;padding:.4rem .3rem}
 .g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
 .cv{position:relative;height:240px;padding:.8rem}
+#pm{border:1px solid var(--line);border-radius:8px;padding:.5rem .6rem}
+td.p{padding:.55rem .6rem;white-space:nowrap}
+.bar{height:5px;background:var(--line);border-radius:3px;margin-top:4px}
+.bar i{display:block;height:100%;border-radius:3px;background:var(--teal)}
+.bar.over i{background:var(--red)}
 </style>
 </head>
 <body>
@@ -81,7 +86,7 @@ td select{width:100%;border:1px solid transparent;border-radius:6px;background:n
     <div class="bar"><span id="sync">Connexion…</span><span id="who"></span><button id="out">Quitter</button></div>
   </header>
   <main>
-    <div class="tabs"><button class="on" data-t="budget">Budget</button><button data-t="dep">Dépenses</button></div>
+    <div class="tabs"><button class="on" data-t="budget">Budget</button><button data-t="dep">Dépenses</button><button data-t="prev">Prévision</button></div>
     <div id="v-budget">
       <div class="sum" id="sum"></div>
       <div id="secs"></div>
@@ -96,17 +101,32 @@ td select{width:100%;border:1px solid transparent;border-radius:6px;background:n
         <h2>Dépenses du mois <input id="dm" type="month"></h2>
         <div class="wrap"><table><thead><tr><th>Date</th><th>Libellé</th><th>Catégorie</th><th>Montant €</th><th>Modifié par</th><th></th></tr></thead><tbody id="dtb"></tbody></table></div>
       </section>
+      <section>
+        <h2>Budget vs réel par catégorie</h2>
+        <div class="wrap"><table><thead><tr><th>Catégorie</th><th>Enveloppe € / mois</th><th>Réel €</th><th>Écart €</th><th>Utilisé</th></tr></thead><tbody id="etb"></tbody></table></div>
+      </section>
+      <section>
+        <h2>Prévision du mois</h2>
+        <div class="wrap"><table><tbody id="ptb"></tbody></table></div>
+      </section>
       <div class="g2">
         <section><h2>Par catégorie</h2><div class="cv"><canvas id="c1"></canvas></div></section>
         <section><h2>6 derniers mois</h2><div class="cv"><canvas id="c2"></canvas></div></section>
       </div>
+    </div>
+    <div id="v-prev" hidden>
+      <div class="sum" id="psum"></div>
+      <section>
+        <h2>Budget vs réel <input id="pm" type="month"></h2>
+        <div class="wrap" id="ptab"></div>
+      </section>
     </div>
   </main>
 </div>
 
 <script>
 // 1) Colle ici la config de TON projet Firebase (Paramètres du projet > Tes applications > Web)
-const CFG = { apiKey:"AIzaSyBHc9L4ksIznuwHiwOf9qCxuxMLq8eC06c", authDomain:"budget-604f9.firebaseapp.com", projectId:"budget-604f9", appId:"1:793331775165:web:ea16f9abbffd0e5d4069d4" };
+const CFG = { apiKey:"COLLE_ICI", authDomain:"", projectId:"", appId:"" };
 
 const TYPES = { revenu:'Revenus', charge:'Charges fixes et dépenses', dette:'Crédits et dettes', epargne:'Épargne' };
 const MODELE = {
@@ -142,7 +162,7 @@ if (CFG.apiKey.startsWith('COLLE')) {
   let dun = null;
   auth.onAuthStateChanged(u => {
     if (dun) { dun(); dun = null; }
-    if (u) dun = dcol.orderBy('date', 'desc').onSnapshot(s => { deps = s.docs.map(d => ({ id:d.id, ...d.data() })); renderDep(); });
+    if (u) dun = dcol.orderBy('date', 'desc').onSnapshot(s => { deps = s.docs.map(d => ({ id:d.id, ...d.data() })); renderDep(); renderPrev(); });
   });
   $('#dm').onchange = renderDep;
   $('#dadd').onclick = () => {
@@ -169,7 +189,7 @@ if (CFG.apiKey.startsWith('COLLE')) {
     unsub = col.orderBy('order').onSnapshot(s => {
       items = s.docs.map(d => ({ id:d.id, ...d.data() }));
       $('#sync').textContent = '● Synchronisé en direct';
-      render();
+      render(); renderPrev();
     }, err => $('#sync').textContent = 'Erreur : ' + err.code);
   });
 
@@ -202,6 +222,37 @@ const CATS = ['Alimentation','Logement','Transport','Santé','Loisirs','Famille'
 const PAL = ['#0f766e','#b7791f','#b4432f','#2f5d8a','#6b4e9b','#7a8a3a','#667684'];
 let c1, c2;
 
+// Enveloppes mensuelles par catégorie, stockées dans budget_items (type 'enveloppe')
+function renderEnv(by) {
+  if (document.activeElement && document.activeElement.closest('#etb')) return;
+  $('#etb').innerHTML = CATS.map(c => {
+    const ex = items.find(i => i.type === 'enveloppe' && i.label === c);
+    const e = ex ? (+ex.amount || 0) : 0, r = by[c] || 0, p = e ? Math.round(r / e * 100) : 0;
+    const col = e && r > e ? 'var(--red)' : 'var(--teal)';
+    return `<tr data-cat="${c}"><td>${c}</td><td><input type="number" step="any" value="${e}"></td><td>${eur(r)}</td>`
+      + `<td style="color:${col};font-weight:700">${e ? eur(e - r) : '—'}</td><td class="m" style="color:${col}">${e ? p + ' %' : '—'}</td></tr>`;
+  }).join('');
+}
+
+// Prévision = revenus − (charges fixes + crédits) − épargne − variables prévus
+function renderPrev(m, tot) {
+  const hist = [1, 2, 3].map(n => {
+    const d = new Date(+m.slice(0, 4), +m.slice(5) - 1 - n, 1);
+    const k = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    return deps.filter(x => (x.date || '').startsWith(k)).reduce((s, x) => s + (+x.amount || 0), 0);
+  }).filter(v => v > 0);
+  const moy = hist.length ? hist.reduce((a, b) => a + b, 0) / hist.length : 0;
+  const env = sum('enveloppe'), vari = env || moy;
+  const fixe = sum('charge') + sum('dette'), eps = sum('epargne'), rev = sum('revenu');
+  const solde = rev - fixe - eps - vari;
+  const row = (l, v, note, color) => `<tr><td>${l}<div class="by">${note || ''}</div></td><td style="text-align:right;font-weight:700;color:${color || 'inherit'}">${eur(v)}</td></tr>`;
+  $('#ptb').innerHTML = row('Revenus', rev)
+    + row('Charges fixes et crédits', -fixe)
+    + row('Épargne', -eps)
+    + row('Dépenses variables prévues', -vari, env ? 'Total de vos enveloppes' : (moy ? 'Moyenne des 3 mois précédents' : 'Définissez des enveloppes ci-dessus'))
+    + row('Solde prévu', solde, tot ? 'Déjà dépensé ce mois : ' + eur(tot) : '', solde < 0 ? 'var(--red)' : 'var(--teal)');
+}
+
 const drow = d => `<tr data-id="${d.id}"><td><input data-f="date" type="date" value="${esc(d.date)}"></td>`
   + `<td><input data-f="label" value="${esc(d.label)}"></td>`
   + `<td><select data-f="category">${CATS.map(c => `<option${c === d.category ? ' selected' : ''}>${c}</option>`).join('')}</select></td>`
@@ -220,6 +271,7 @@ function renderDep() {
     + `<div><small>Nombre de dépenses</small><b>${mois.length}</b></div>`
     + `<div><small>Plus gros poste</small><b>${top ? esc(top[0]) : '—'}</b></div>`
     + `<div class="rest"><small>Reste à vivre du budget</small><b class="${reste < 0 ? 'neg' : ''}">${eur(reste)}</b></div>`;
+  renderEnv(by); renderPrev(m, tot);
   if (!(document.activeElement && document.activeElement.closest('#dtb')))
     $('#dtb').innerHTML = mois.map(drow).join('') || '<tr><td colspan="6" class="empty">Aucune dépense ce mois-ci.</td></tr>';
   if (!window.Chart) return;
@@ -240,8 +292,47 @@ document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
   document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b));
   $('#v-budget').hidden = b.dataset.t !== 'budget';
   $('#v-dep').hidden = b.dataset.t !== 'dep';
+  $('#v-prev').hidden = b.dataset.t !== 'prev';
   if (b.dataset.t === 'dep') renderDep();
+  if (b.dataset.t === 'prev') renderPrev();
 });
+
+// Charges sans catégorie = fixes. Charges avec catégorie = enveloppes variables, comparées aux dépenses réelles.
+function renderPrev() {
+  if ($('#v-prev').hidden) return;
+  const m = $('#pm').value;
+  const ym = (y, mo) => { const d = new Date(y, mo, 1); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); };
+  const ks = [1, 2, 3].map(i => ym(+m.slice(0, 4), +m.slice(5) - 1 - i));
+  const of = k => deps.filter(d => (d.date || '').startsWith(k));
+  const tot = (list, c) => list.filter(d => d.category === c).reduce((s, d) => s + (+d.amount || 0), 0);
+  const env = {};
+  items.filter(i => i.type === 'charge' && i.cat).forEach(i => env[i.cat] = (env[i.cat] || 0) + (+i.amount || 0));
+  const fixes = items.filter(i => i.type === 'charge' && !i.cat).reduce((s, i) => s + (+i.amount || 0), 0) + sum('dette');
+  const base = ks.filter(k => of(k).length);
+  const cats = CATS.filter(c => env[c] || deps.some(d => d.category === c));
+  let vars = 0;
+  const rows = cats.map(c => {
+    const e = env[c] || 0, r = tot(of(m), c);
+    const a = base.length ? base.reduce((s, k) => s + tot(of(k), c), 0) / base.length : e;
+    vars += a;
+    const w = e ? Math.min(100, r / e * 100) : (r ? 100 : 0);
+    return `<tr><td class="p">${c}</td><td class="p">${e ? eur(e) : '—'}</td>`
+      + `<td class="p">${eur(r)}<div class="bar${r > e ? ' over' : ''}"><i style="width:${w}%"></i></div></td>`
+      + `<td class="p" style="color:${e - r < 0 ? 'var(--red)' : 'var(--teal)'}">${e ? eur(e - r) : '—'}</td>`
+      + `<td class="p">${base.length ? eur(a) : '—'}</td><td class="p"><b>${eur(a)}</b></td></tr>`;
+  });
+  const rev = sum('revenu'), eps = sum('epargne'), reste = rev - fixes - vars - eps;
+  $('#psum').innerHTML = `<div><small>Revenus</small><b>${eur(rev)}</b></div>`
+    + `<div><small>Fixes et crédits</small><b>${eur(fixes)}</b></div>`
+    + `<div><small>Variables prévues</small><b>${eur(vars)}</b></div>`
+    + `<div><small>Épargne</small><b>${eur(eps)}</b></div>`
+    + `<div class="rest"><small>Reste prévu</small><b class="${reste < 0 ? 'neg' : ''}">${eur(reste)}</b></div>`;
+  $('#ptab').innerHTML = cats.length
+    ? `<table><tr><th>Catégorie</th><th>Enveloppe</th><th>Réel du mois</th><th>Écart</th><th>Moy. 3 mois</th><th>Prévision</th></tr>${rows.join('')}</table>`
+    : `<div class="empty">Dans l'onglet Budget, associez vos charges variables à une catégorie (colonne « Fixe ou catégorie ») pour les comparer à vos dépenses.</div>`;
+}
+$('#pm').value = new Date().toISOString().slice(0, 7);
+$('#pm').onchange = renderPrev;
 
 function fin(it) {
   const P = +it.amount, B = +it.balance, r = (+it.rate || 0) / 1200;
@@ -254,6 +345,7 @@ function row(it) {
   const d = it.type === 'dette';
   const num = (f, v) => `<td><input data-f="${f}" type="number" step="any" value="${+v || 0}"></td>`;
   return `<tr data-id="${it.id}"><td><input data-f="label" value="${esc(it.label)}"></td>${num('amount', it.amount)}`
+    + (it.type === 'charge' ? `<td><select data-f="cat"><option value="">Fixe</option>${CATS.map(c => `<option${c === it.cat ? ' selected' : ''}>${c}</option>`).join('')}</select></td>` : '')
     + (d ? num('balance', it.balance) + num('rate', it.rate) + `<td class="m">${fin(it)}</td>` : '')
     + `<td class="by">${esc((it.by || '').split('@')[0])}</td><td><button class="del" data-del="${it.id}" aria-label="Supprimer">✕</button></td></tr>`;
 }
@@ -277,7 +369,9 @@ function render() {
     const rows = items.filter(i => i.type === t);
     const head = t === 'dette'
       ? '<th>Libellé</th><th>Mensualité €</th><th>Solde restant €</th><th>Taux %</th><th>Fin estimée</th><th>Modifié par</th><th></th>'
-      : '<th>Libellé</th><th>Montant € / mois</th><th>Modifié par</th><th></th>';
+      : t === 'charge'
+        ? '<th>Libellé</th><th>Montant € / mois</th><th>Fixe ou catégorie</th><th>Modifié par</th><th></th>'
+        : '<th>Libellé</th><th>Montant € / mois</th><th>Modifié par</th><th></th>';
     return `<section><h2>${name}<span>${eur(sum(t))} / mois</span></h2><div class="wrap"><table><tr>${head}</tr>${rows.map(row).join('')}</table></div><button class="add" data-add="${t}">+ Ajouter une ligne</button></section>`;
   }).join('');
 }
